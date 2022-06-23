@@ -73,4 +73,30 @@ kubectl get deployments
 # to describe the deployments
 kubectl descibe deployment <deployment-name>
 
+# to check the status of the deployment rollouts
+kubectl rollout status deployment/<deployment-name>
+# e.g
+kubectl rollout status deployment/myapp-deployment
 
+# to get history of the rollout deployments
+kubectl rollout history deployment/<deployment-name>
+
+# change the image of the deployment using CLI; does not modify the definition file.
+# e.g.
+kubectl set image deployment/<deployment-name> \nginx=nginx:1.9.1
+
+"Tow types of deployment strategies: 1. Recreate - all at once; downtime"
+"2. Rolling Update (default): one by one deployment"
+
+# to undo the changes in the newly created replicaset
+# and bring back the old replicaset
+kubectl rollout undo deployment/myapp-deployment
+
+# record option instrcuts kubernetes to record the cause of the changes
+kubectl create -f <definition-file> --record
+
+# to get service
+kubectl get service "or" kubectl get svc
+
+# to get a url from the minikube service 
+minikube service <service-name> --url
