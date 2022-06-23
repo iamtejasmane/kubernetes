@@ -100,3 +100,6 @@ kubectl get service "or" kubectl get svc
 
 # to get a url from the minikube service 
 minikube service <service-name> --url
+
+# descibe service
+kubectl describe service <service-name>
