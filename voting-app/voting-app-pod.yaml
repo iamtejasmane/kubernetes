@@ -11,10 +11,3 @@ spec:
       image: kodekloud/examplevotingapp_vote:v1
       ports:
         - containerPort: 80
-      resources:
-      limits:
-        memory: 512Mi
-        cpu: "1"
-      requests:
-        memory: 256Mi
-        cpu: "0.2"
