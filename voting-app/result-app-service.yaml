@@ -6,9 +6,11 @@ metadata:
     name: result-service
     app: demo-voting-app
 spec:
+  type: NodePort
   ports:
     - port: 80
       targetPort: 80
+      nodePort: 30005
   selector:
     name: result-app-pod
     app: demo-voting-app
