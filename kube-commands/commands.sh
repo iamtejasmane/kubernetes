@@ -103,3 +103,18 @@ minikube service <service-name> --url
 
 # descibe service
 kubectl describe service <service-name>
+
+# nginx with dry run - does not create it
+kubectl run nginx --image=nginx --dry-run=client -o yaml
+
+# create deployment without yaml
+kubectl create deployment --image=nginx nginx
+
+# deployment dry run
+kubectl create deployment --image=nginx nginx --dry-run=client -o yaml
+
+# create deployment from CLI and save it to the file
+kubectl create deployment --image=nginx nginx --replicas=4 --dry-run=client -o yaml > nginx-deployment.yaml
+
+
+
