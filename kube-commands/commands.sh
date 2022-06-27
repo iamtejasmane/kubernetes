@@ -116,5 +116,61 @@ kubectl create deployment --image=nginx nginx --dry-run=client -o yaml
 # create deployment from CLI and save it to the file
 kubectl create deployment --image=nginx nginx --replicas=4 --dry-run=client -o yaml > nginx-deployment.yaml
 
+# create a service named redis-service of type ClusterIP to expose podredis on port 6379
+kubectl expose pod redis --port=6379 --name redis-service --dry-run=client -o yaml
+"This will automatically use the Pod's labels as selectors"
+
+# Or
+kubectl create service clusterip redis --tcp=6379:6379 --dry-run=client -o yaml
+"This will not use the pods labels as selectors; NOT RECOMMENDED"
+
+# create service named nginx of type NodePort to expose pod nginx's port 80 on port 30080 on the nodes
+kubectl expose pod nginx --type=NodePort --port=80 --name=nginx-service --dry-run=client -o yaml
+"This will automatically use the pod's labels as selectors, but you cannot specify the node port. You have to generate a definition file and then add the node port in manually before creating the service with the pod"
+
+# create a namespace with yaml def file
+kubectl create -f namespace.yaml
+
+# create a namespace with CLI
+kubectl create namespace <name>
+
+# to set a specific namespace as a default one
+kubectl config set-context $(kubectl config current-context) --namespace=<namespace-name>
+
+# get pods in specific namespace
+kubectl get pods --namespace=<namespace-name>
+
+# to get all the pods in all the namespaces
+kubectl get pods --all-namespaces
+
+"to define resources for the namespaces use Resource Quota"
+
+# create pod in another namespace 
+kubectl run redis --image=redis -n finance
+
+# get pods in all namespaces
+kubectl get pods --all-namespaces
+
+# create a service to expose a deployment
+kubectl expose deployment nginx --port 80
+
+# to change the image of the deployment 
+kubectl set image deployment nginx nginx=nginx:1.18
+
+# to edit object from using definition file
+kubectl replace -f <yaml-file>
+
+# in case of delete and rerun complete object
+kubectl replace --force -f nginx.yaml
+
+# to delete object described in the definition file
+kubectl delete -f <yaml-file>
+
+# create pod with labels (imperative)
+kubectl run --image=redis redis --labels tier=db
+
+# ** LABELS AND SELECTORS **
+# to filter pod with labels
+kubectl get pods --selector app=App1
 
 
