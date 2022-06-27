@@ -170,7 +170,86 @@ kubectl delete -f <yaml-file>
 kubectl run --image=redis redis --labels tier=db
 
 # ** LABELS AND SELECTORS **
+
 # to filter pod with labels
 kubectl get pods --selector app=App1
+
+"annotations in the metadata section used to define other information than labels. ie. buildvesion, email, phone etc."
+
+# to get all the objects in a prod environment
+kubectl get all --selector env=prod
+
+# to get a pod with multiple labels
+kubectl get all --selector env=pod,bu=finance,tier=frontend
+
+# ** TAINT & TOLERATION **
+
+# tains are added to node
+# to taint a node
+kubectl taint nodes node-name key=value:taint-effect
+
+"taint-effect describes what happens to POD's that do not tolerate this taint"
+# There taint effects 1. NoSchedule 2. PreferNoSchedule 3. NoExecute
+kubectl taint nodes node1 app=blue:NoSchedule
+
+# tolerations are added to pod
+# In pod definition file inside spec add toleration
+
+"
+tolerations:
+- key: "app"
+  operator: "Equal"
+  value: "blue"
+  effect: "NoSchedule"
+"
+# to check tains applied on the node
+kubectl describe node node-name | grep Taint
+
+# remove tains from a node
+kubectl edit node node-name "and remove the taints section"
+
+
+# tains and tolerations does not tell a pod to go to a particular node
+# instead it tells a node to only accept a pod with certain toleration
+
+# if you requirement is to restrict a pod with certain node then this
+# can be achieved with the concept Node Affinity
+
+# Schedular taints the Master node so that its not schedule any nodes on it
+
+
+# ** Node Selector **
+# use only on single selection. Not for complex filtering
+
+# to label a node
+kubectl label nodes node-name label-key=label-value
+kubectl label nodes node-1 size=Large
+
+"use nodeSelector in the Pod definition file and define the label there"
+
+# ** Node Affinity **
+# used for complex and advance expression
+
+"
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+    	nodeSelectorTerms:
+	- matchExpressions:
+	  - key: size
+	    operator: In
+	    values:
+	    - Large
+	    - Medium
+"
+
+"operator: Exists" - just check the size 
+# operations are : In, NotIn etc.
+
+
+
+
+
+
 
 
