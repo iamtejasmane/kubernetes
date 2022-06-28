@@ -246,7 +246,51 @@ affinity:
 "operator: Exists" - just check the size 
 # operations are : In, NotIn etc.
 
+# to get pod definition in yaml format
+kubectl get pod webapp -o yaml > my-new-pod.yaml
 
+kubectl edit deployment my-deployment
+"Since the pod template is a child of the deployment specification,  with every change the deployment will automatically delete and create a new pod with the new changes"
+
+# The status OOMKilled indicates that it is failing because the pod ran out of memory. Identify the memory limit set on the POD.
+
+
+# ** DAEMON SET **
+
+# to get daemon sets
+kubectl get daemonsets
+
+# to describe daemonsets
+kubectl describe daemonset daemonset-name
+
+# to get all daemonsets in all the namespaces
+kubectl get daemonsets --all-namespaces
+
+# to get events in the current namespace
+kubectl get events
+
+# to view the logs of the object
+kubectl logs sheduler-object -name-space=namespace-name
+
+# run pod with command
+kubectl run --image=busybox busybox --command sleep 1000 -o yaml > busybox.yaml
+
+# to start matrix server on minikube
+minikube addons enable mertrics-server
+
+# for other environment deploy the matrics server cloning it from the git
+git clone https://github.com/kodekloudhub/kubernetes-metrics-server.git
+kubectl create -f .
+
+# to see performance and memory consumption by nodes
+kubectl top node
+
+# performance matrics for pod
+kubectl top pod
+
+# to get logs
+kubectl logs -f log-pod-name container-name
+kubectl logs -f event-simulator-pod event-simulator
 
 
 
