@@ -292,8 +292,153 @@ kubectl top pod
 kubectl logs -f log-pod-name container-name
 kubectl logs -f event-simulator-pod event-simulator
 
+# ** ROLLOUT & VERSIONING
+# to check status of the rollout
+kubectl rollout status deployment/<deployment-name>
+
+# to see the history of the rollouts
+kubectl rollout history deployment/<deployment-name>
+
+# to undo a change 
+kubectl rollout undo deployment/<deployment-name>
 
 
+# ** Environment Variables **
 
+# Plain key value
+"
+env:
+	- name: NAME_OF_ENV
+	  value: VALUE_OF_ENV 
+"
+
+# Config Map
+kubectl create configmap <config-name> --form-literal=<key>=<value>
+
+kubectl craete configmap app-config --form-literal=APP_COLOR=blue
+
+# to get config map
+kubectl get configmap
+
+# to describe config map
+kubectl descibe configmap
+
+# env
+"
+envForm:
+	- configMapRef:
+		name: app-config
+"
+# single env
+"
+env:
+	- name: APP_COLOR
+	  valueFrom:
+	  	configMapKeyRef:
+			name: app-config
+			key: APP_COLOR
+"
+
+# config from volumes
+"
+volumes:
+- name: app-config-volume
+  configMap:
+	name: app-config
+"
+
+# ** secrets **
+# imperative CLI
+kubectl create secret generic <secret-name> 
+--from-literal=<key>=<value> \
+--from-literal=<key>=<value> 
+
+kubectl create secret generic app-secret --from-literal=DB_Host=mysql
+
+# imperative from file
+kubectl create secret generic <secret-name> --from-file=<path-to-file>
+
+# to convert the plaintext into base64 | encode
+echo -n 'text' | base64
+echo -n 'password' | base64
+
+# to get secret 
+kubectl get secret 
+
+# to see values
+kubectl get secret <secret-name> -o yaml
+
+# to convert base64 into the plaintext
+echo -n 'cGFzc3dvcmQ=' | base64 --decode
+
+# env
+"
+envForm:
+	- secretRef:
+		name: app-secret
+"
+
+# to move all the pods from a specific node to other nodes
+# empty the node
+kubectl drain <node-name>
+kubectl drain node-1
+
+# --ignore-daemonsets - to ignore the daemonset
+
+"it also makes a node unshedulable util you remove the restiction"
+
+# to make a node unshedulable without terminating or moving its existing pod to another node
+kubectl cordon node-name
+
+# to make node available again to schedule the pods 
+kubectl uncordon node-name
+
+# to check upgrades on kubeadm
+kubeadm upgrad plan
+
+# to upgrad kubeadm tool
+sudo apt-get upgrade -y kubeadm=1.12.0-00
+kubeadm upgrade apply v1.12.0
+
+# to upgrade kubelet
+sudo apt-get upgrade -y kubelet=1.12.0-00
+systemctl restart kubelet
+
+# to upgrade node config
+kubeadm upgrade node config --kubelet-version v1.12.0
+systemctl restart kubelet
+
+# to get backup of all the resources into a definition file
+kubectl get all --all-namespaces -o yaml > all-deploy-services.yaml
+
+# tools to do this - velero
+
+# ** etcd **
+# to take a snapshot
+etcdctl snapshot save snapshot-name
+etcdctl snapshot save snapshot.db
+
+"ETCDCTL_API=3 etcdctl --endpoints=https://[127.0.0.1]:2379 \
+--cacert=/etc/kubernetes/pki/etcd/ca.crt \
+--cert=/etc/kubernetes/pki/etcd/server.crt \
+--key=/etc/kubernetes/pki/etcd/server.key \
+snapshot save /opt/snapshot-pre-boot.db"
+
+# to restore snap shot 
+etcdctl snapshot restore snapshot.db --data-dir /var/lib/etcd-from-backup
+
+# reload the service daemon
+systemctl daemon-reload
+
+# restart etcd service 
+service etcd restart
+
+# start/stop kubeapi server
+service kube-apiserver stop/start
+
+"To make use of etcdctl for tasks such as back up and restore, make sure that you set the ETCDCTL_API to 3"
+
+# you can do this by exporting etcd on master node
+export ETCDCTL_API=3 
 
 
