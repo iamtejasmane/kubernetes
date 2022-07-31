@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+    name: db-policy
+spec:
+    podSelector:
+        matchLabels:
+           roles: db  # name of the pod to apply policy on
+    policyTypes:
+    - Ingress
+    - Egress
+    ingress:
+    - from:
+      - podSelector:
+           matchLabels:
+              name: api-pod # name of the pod from which traffic is coming on
+        namespaceSelector: # to selec a specific namespace
+           matchLabels:
+              name: prod      
+      - ipBlock:    # ip block allow you to connect another server not part of kubernetes cluster
+           cidr: 192.168.5.10/32
+      ports:
+      - protocol: TCP
+        port: 3306
+    egress:
+    - to:  # can have all the above sections
+      - ipBlock:
+            cidr: 192.168.5.10/32
+      ports:
+      - protocol: TCP
+        port: 80
