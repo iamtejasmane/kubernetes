@@ -1,4 +1,6 @@
-# get all the nodes persent in the cluster
+# *** Core Concepts ***
+
+# to get all the nodes persent in the cluster
 kubectl get nodes
 
 # kubernetes version
@@ -19,10 +21,10 @@ kubectl run nginx --image=nginx
 
 # all info
 kubectl describe pod <pod>-<ID>
-# e.g kubectl descibe pod newpods-s8q82
+# e.g kubectl describe pod newpods-s8q82
 
 # to check the image used to create new pods
-kubectl descibe pod <podWihtID> | grep -i image
+kubectl describe pod <podWihtID> | grep -i image
 
 "ImagePullBackOff error: When image does not exist on the docker hub"
 
@@ -30,7 +32,7 @@ kubectl descibe pod <podWihtID> | grep -i image
 kubectl delete pod <pod>
 
 # to see all the keys stored in etcd on kubeadm
-kubectl exec etcd-master -n kube-system etcdctl get / --prefix -keys-only
+kubectl exec etcd-master -n kube-system etcdctl get --prefix -keys-only
 
 # apply or create pod from yaml file
 kubectl apply -f <file>
@@ -39,6 +41,8 @@ kubectl apply -f <file>
 
 # to edit the pod configuration 
 kubectl edit pod <pod>
+
+# * Replication Controller or ReplicaSet *
 
 # to create replicacontroller or replicaset from definition file
 kubectl create -f <definition-file-yml>
@@ -62,7 +66,7 @@ kubectl scale replicaset <replicaset-name> --replicas={count}
 # delete replica set and also delete all underlaying PODs
 kubectl delete replicaset <replicaset-name>
 
-# descibe replicaset; all information
+# describe replicaset; all information
 kubectl describe replicaset <replicaset-name>
 
 # to edit existing configuration of the replicaset 
@@ -71,6 +75,8 @@ kubectl edit replicaset <replicaset-name>
 
 # to get info of all the cerated objects created in the cluster
 kubectl get all
+
+# * Deployments *
 
 # to get deployments
 kubectl get deployments
@@ -90,7 +96,7 @@ kubectl rollout history deployment/<deployment-name>
 # e.g.
 kubectl set image deployment/<deployment-name> \nginx=nginx:1.9.1
 
-"Tow types of deployment strategies: 1. Recreate - all at once; downtime"
+"Two types of deployment strategies: 1. Recreate - all at once; downtime"
 "2. Rolling Update (default): one by one deployment"
 
 # to undo the changes in the newly created replicaset
@@ -99,6 +105,8 @@ kubectl rollout undo deployment/myapp-deployment
 
 # record option instrcuts kubernetes to record the cause of the changes
 kubectl create -f <definition-file> --record
+
+# * Service *
 
 # to get service
 kubectl get service "or" kubectl get svc
@@ -132,6 +140,11 @@ kubectl create service clusterip redis --tcp=6379:6379 --dry-run=client -o yaml
 # create service named nginx of type NodePort to expose pod nginx's port 80 on port 30080 on the nodes
 kubectl expose pod nginx --type=NodePort --port=80 --name=nginx-service --dry-run=client -o yaml
 "This will automatically use the pod's labels as selectors, but you cannot specify the node port. You have to generate a definition file and then add the node port in manually before creating the service with the pod"
+
+# Create a new pod called custom-nginx using the nginx image and expose it on container port 8080
+kubectl run custom-nginx --image=nginx --port=8080
+
+# * Namespace *
 
 # create a namespace with yaml def file
 kubectl create -f namespace.yaml
@@ -174,6 +187,9 @@ kubectl delete -f <yaml-file>
 # create pod with labels (imperative)
 kubectl run --image=redis redis --labels tier=db
 
+
+# *** Scheduling ***
+
 # ** LABELS AND SELECTORS **
 
 # to filter pod with labels
@@ -201,7 +217,8 @@ kubectl taint nodes node1 app=blue:NoSchedule
 # In pod definition file inside spec add toleration
 
 "
-tolerations:
+
+spec.tolerations:
 - key: "app"
   operator: "Equal"
   value: "blue"
@@ -248,16 +265,16 @@ affinity:
 	    - Medium
 "
 
-"operator: Exists" - just check the size 
+"operator: Exists" - just to check the size 
 # operations are : In, NotIn etc.
 
 # to get pod definition in yaml format
 kubectl get pod webapp -o yaml > my-new-pod.yaml
 
 kubectl edit deployment my-deployment
-"Since the pod template is a child of the deployment specification,  with every change the deployment will automatically delete and create a new pod with the new changes"
+"Since the pod template is a child of the deployment specification,  with every change in the deployment will automatically delete and create a new pod with the new changes"
 
-# The status OOMKilled indicates that it is failing because the pod ran out of memory. Identify the memory limit set on the POD.
+# The status OOMKilled indicates that it is failing because the pod ran out of memory. Identify the memory limit set on the POD
 
 
 # ** DAEMON SET **
@@ -280,7 +297,10 @@ kubectl logs sheduler-object -name-space=namespace-name
 # run pod with command
 kubectl run --image=busybox busybox --command sleep 1000 -o yaml > busybox.yaml
 
-# ** Monitoring - Matrix-Server **
+# create a config map from file
+kubectl create -n kube-system configmap my-scheduler-config --from-file=/root/my-scheduler-config.yaml
+
+# *** Monitoring - Matrix-Server ***
 
 # to start matrix server on minikube
 minikube addons enable mertrics-server
@@ -299,10 +319,11 @@ kubectl top pod
 # ** Logs **
 
 # to get logs
-kubectl logs -f <log-pod-nam>e <container-nam>e  # -f show logs on the screen
+kubectl logs -f <log-pod-name> <container-name>  # -f show logs on the screen
 kubectl logs -f event-simulator-pod event-simulator
 
-# ** ROLLOUT & VERSIONING
+#  *** ROLLOUT & VERSIONING ***
+
 # to check status of the rollout
 kubectl rollout status deployment/<deployment-name>
 
@@ -406,7 +427,7 @@ envForm:
 		name: app-secret
 "
 
-# ** Cluster Maintainance ** 
+# *** Cluster Maintainance *** 
 
 # to move all the pods from a specific node to other nodes during maintainace
 
@@ -417,7 +438,7 @@ kubectl drain node-1
 # --ignore-daemonsets - to ignore the daemonset
 # it also makes a node unshedulable util you remove the restiction
 
-# drain command will not work if the Pods are not managed by ReplicationController, ReplicaSet, Job, DaemonSet or StatefulSet
+# drain command will not work if the Pods are not managed by ReplicationController, ReplicaSet, Job, DaemonSet or StatefulSet; 
 # use --force ; in such case we'll lost the pods forever
 
 
@@ -542,8 +563,10 @@ snapshot save /opt/snapshot-pre-boot.db"
 export ETCDCTL_API=3 
 
 
-# TIP: what address can we you reach the ETCD cluster from the controlplane node?
+# TIP: what address can we reach the ETCD cluster from the controlplane node?
 # -> describe etcd pod and check --listen-client-urls
+
+# ***| Security |***
 
 # ** Authenication **
 
@@ -559,7 +582,7 @@ export ETCDCTL_API=3
 ssh-keygen # on the client
 
 # secure your server locking down all access to it except the one with the public key
-# it's usually done by adding an wntry with you public key into the server's
+# it's usually done by adding an entry with your public key into the server's
 cat ~/.ssh/authorized_keys # file
 
 # to secure multiple server you can use same public key to lock them and
@@ -574,7 +597,7 @@ openssl genrsa -0 my-secret.key -pubout > mysecret.pem # for public key
 # ** TLS In Kubernetes **
 
 # all the servers in the kubernetes uses the server certificates
-# all the clien uses the client certificates
+# all the client uses the client certificates
 
 # you can have multiple CA's for the kubernetes cluster 
 # requires at least one
@@ -683,7 +706,7 @@ $HOME/.kube/config
 # to pass a specific path
 kubectl config view --kubeconfig=my-custom-config-path
 
-# make you custom config file as default config update the default config file
+# make your custom config file as default config update the default config file
 
 # to change/update the current context
 kubectl config use-context prod-user@production
@@ -1058,10 +1081,12 @@ cat /var/log/kube-proxy.log
 # * DNS in kubernetes *
 
 #  Kube-DNS table structure:
-| Hostname  | Namespaces | Type |     Root      | IP Address    |
-|web-service|      apps  |  svc | cluster.local | 10.107.37.188 |
-|10-244-2-5 |      apps  |  pod | cluster.local | 10.244.2.5    |
-
+ _________________________________________________________________
+|  Hostname   | Namespaces | Type |     Root      | IP Address    |
+|_____________|____________|______|_______________|_______________|
+| web-service |      apps  |  svc | cluster.local | 10.107.37.188 |
+| 10-244-2-5  |      apps  |  pod | cluster.local | 10.244.2.5    |
+|_____________|____________|______|_______________|_______________|
 # dns servcer name - CoreDNS
 
 # to see coredns core file 
@@ -1093,7 +1118,15 @@ host <service-name>
 
 # * Ingress Networking - 1 *
 
-# to create ingress rule
+# how ingress works
+# 1. Deploy - you deploy a solution such as nginx, traefik, haproxy, Istio as a 'Ingress Controller'
+
+# 2. Cofigure - Ingress Resources
+
+# Ingress controller does not come as default
+
+
+# to create ingress resource - imperative
 kubectl create ingress <ingress-name> --rule="host/path=service:port"
 
 kubectl create ingress ingress-test --rule="wear.my-online-store.com/wear*=wear-service:80"
@@ -1105,10 +1138,21 @@ kubectl logs <pod-name> -f
 kubectl logs <pod-name> -f --previous
 
 
+# *** Troubleshooting ***
+
+# ** Toubleshooting Application **
+
+# to see the previous logs of the pod
+kubectl logs pod-name -f --previous
+
 # ** Troubleshooting Worker Node
 
+# when a worker node stops communicating with the master, may be due to a crash, these status are set to Unknown
+
+
+
 # to describe a node and check status
-kubectl descibe node <node-name>
+kubectl describe node <node-name>
 
 # to check cpu and process
 top
@@ -1118,6 +1162,8 @@ df -h
 
 # to check status of the kubelet 
 service kubelet status
+# if kubelet is stopped then start kubelet
+service kubelet start
 
 # check kubelet logs 
 sudo journalctl -u kubelet
@@ -1125,6 +1171,11 @@ sudo journalctl -u kubelet
 # to check kubelet certificates
 openssl x509 -in /var/lib/kubelet/worker-1.crt -text
 
+# kubelet files directory
+/var/lib/kubelet/config.yaml 
+
+# to check the master server and its port defined in the worker node config
+/etc/kubernetes/kubelet.conf
 
 
 
