@@ -582,7 +582,7 @@ export ETCDCTL_API=3
 ssh-keygen # on the client
 
 # secure your server locking down all access to it except the one with the public key
-# it's usually done by adding an entry with your public key into the server's
+# it's usually done by adding an wntry with you public key into the server's
 cat ~/.ssh/authorized_keys # file
 
 # to secure multiple server you can use same public key to lock them and
@@ -597,7 +597,7 @@ openssl genrsa -0 my-secret.key -pubout > mysecret.pem # for public key
 # ** TLS In Kubernetes **
 
 # all the servers in the kubernetes uses the server certificates
-# all the client uses the client certificates
+# all the clien uses the client certificates
 
 # you can have multiple CA's for the kubernetes cluster 
 # requires at least one
@@ -706,7 +706,7 @@ $HOME/.kube/config
 # to pass a specific path
 kubectl config view --kubeconfig=my-custom-config-path
 
-# make your custom config file as default config update the default config file
+# make you custom config file as default config update the default config file
 
 # to change/update the current context
 kubectl config use-context prod-user@production
