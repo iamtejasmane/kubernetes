@@ -461,6 +461,11 @@ kubeadm upgrade apply v1.12.0
 
 # upgrading kubeadm does not shows the result on get nodes command
 
+# to get the list of tokens to create a cluster
+kubadm token list 
+
+# Tip: status ScheduingDisabled = due to Uncordened node
+
 # to upgrade kubelet
 sudo apt upgrade -y kubelet=1.12.0-00 
 systemctl restart kubelet # once the package is updated restart the kubelet service
@@ -951,6 +956,11 @@ storageClassName: sc-name # in spec section of pvc definition file
 
 # storage class, behind the scene still creates a pv but automatically
 
+# to run a command on a container running in the pod
+kubectl exec <pod-name> -- <command>
+kubectl exec webapp -- cat /log/app.log
+
+kubectl exec my-pod cotainer1 -- ls # in case of multiple container
 
 # ** Networking **
 
