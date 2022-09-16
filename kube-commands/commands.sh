@@ -551,8 +551,7 @@ snapshot save /opt/snapshot-pre-boot.db"
      service kube-apiserver stop
 # 2. run the restore snapshot command with the path of the snapshot file
      etcdctl snapshot restore snapshot.db --data-dir /var/lib/etcd-from-backup
-#    after this new backup dir created 
-     --data-dir=/var/lib/etcd-from-backup
+#    after this new backup dir created at --data-dir=/var/lib/etcd-from-backup
 # 3. reload the service daemon
      systemctl daemon-reload
 # 4. restart etcd service 
@@ -943,6 +942,7 @@ persistentVolumeReclaimPolicy: Delete
 
 # The same is true for ReplicaSets or Deployments. Add this to the pod template section of a Deployment on ReplicaSet
 
+# After deleting a PVC of Retain policy the status of the PV becomes 'Released'
 
 # * Storage Classes *
 
@@ -955,6 +955,9 @@ persistentVolumeReclaimPolicy: Delete
 storageClassName: sc-name # in spec section of pvc definition file
 
 # storage class, behind the scene still creates a pv but automatically
+
+# Volume Bindig Mode
+volumeBindingMode # this feild controls when volume binding and dyncamic provisioning should occur.
 
 # to run a command on a container running in the pod
 kubectl exec <pod-name> -- <command>
