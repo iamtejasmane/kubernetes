@@ -450,6 +450,10 @@ kubectl uncordon node-name
 
 # ** Cluster Upgrade **
 
+# to check the version there are two ways
+# 1. kubectl version
+# 2. kubectl get nodes && check its VERSION
+
 # upgrade master
 
 # to check upgrades on kubeadm
@@ -534,6 +538,9 @@ etcdctl snapshot save snapshot.db
 --cacert: Mandatory Flag (Absolute Path to the CA certificate file)
 --cert: Mandatory Flag (Absolute Path to the Server certificate file)
 --key: Mandatory Flag (Absolute Path to the Key file)"
+
+# to check the endpoints
+kubectl describe  pods -n kube-system etcd-cluster1-controlplane  | grep advertise-client-urls
 
 # to view the status of the backup
 etcdctl snapshot status snapshot-name
