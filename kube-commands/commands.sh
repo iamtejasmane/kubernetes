@@ -827,17 +827,22 @@ serviceAccountName: sa-name
 # to disable auto mount of a pod 
 automountServiceAccountToken: false
 
+# to send request to kube-api server using curl command
+curl https://[IP]/api -insecure --header "Autorization: Bearer <Token>"
+
+# There are two types of kind in rolebinding 
+# 1. User
+# 2. ServiceAccount
 
 
-#
-#
-#
-#
-#
-#
+# to check which user is used to execute the process within the pod
+kubectl exec <pod-name> -- whoami
 
-
-
+#
+#
+#
+#
+#
 
 
 # * Security Context *
@@ -989,6 +994,13 @@ ip -n namespace-name link
 # to add a container into a specific namespace
 bridge add <cid> <namespace>
 
+# identify network interface configured for cluster connectivity on a node
+ip a | grep -B2 <IP>
+
+# to identify interface/bridge create by a container runtime on the host
+ip link 
+# or 
+ip link | grep <container-runtime>
 
 # to check MAC add of worker node in kubeadm
 apr node-name
