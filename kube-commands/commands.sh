@@ -577,6 +577,14 @@ export ETCDCTL_API=3
 # TIP: what address can we reach the ETCD cluster from the controlplane node?
 # -> describe etcd pod and check --listen-client-urls
 
+# steps to take etcd backup of an external etcd cluster
+# 1. ssh into a controlplane node to get etcd cluster endpoint
+ssh cluster1-controlplane cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep --color etcd
+
+# copy the endpoint and ssh into it
+ssh 10.2.2.6
+
+
 # ***| Security |***
 
 # ** Authenication **
