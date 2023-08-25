@@ -675,6 +675,165 @@ Inspect kube-proxy log:
 cat /var/log/kube-proxy.log
 ```
 
+# DNS in Kubernetes
+
+Kube-DNS table structure:
+
+| Hostname    | Namespaces | Type | Root          | IP Address    |
+| ----------- | ---------- | ---- | ------------- | ------------- |
+| web-service | apps       | svc  | cluster.local | 10.107.37.188 |
+| 10-244-2-5  | apps       | pod  | cluster.local | 10.244.2.5    |
+
+DNS server name: **CoreDNS**
+
+To see the CoreDNS Corefile:
+
+```bash
+cat /etc/coredns/Corefile
+```
+
+To find the CoreDNS file in the cluster if it's not in the default location:
+
+```bash
+kubectl -n kube-system describe deployments.apps coredns | grep -A2 Args | grep Corefile
+```
+
+**Tip:** While troubleshooting, check namespaces or FQDN (Fully Qualified Domain Names) to the environment variable values.
+
+From a pod1, perform an nslookup on the mysql service and redirect the output to a file:
+
+```bash
+kubectl exec -it pod1 -- nslookup mysql.payroll > /root/CKA/nslookup.out
+```
+
+In this example, `mysql.payroll` is a service name.
+
+The Corefile configuration is passed as a ConfigMap object:
+
+```bash
+kubectl get configmap -n kube-system
+```
+
+The IP address of the CoreDNS service is passed to `/etc/resolv.conf` as the nameserver and search field. The kubelet handles these configurations:
+
+```bash
+cat /var/lib/kubelet/config.yaml
+```
+
+To check the FQDN for a service:
+
+```bash
+host <service-name>
+```
+
+To see the configuration file for the CoreDNS service, use:
+
+```bash
+kubectl describe pod coredns-pod-name
+```
+
+# Ingress Networking
+
+How Ingress works:
+
+1. Deploy - Deploy a solution like nginx, traefik, haproxy, or Istio as an 'Ingress Controller'.
+
+2. Configure - Create Ingress Resources.
+
+Ingress controller is not enabled by default.
+
+To create an Ingress resource imperatively:
+
+```bash
+kubectl create ingress <ingress-name> --rule="host/path=service:port"
+```
+
+For example:
+
+```bash
+kubectl create ingress ingress-test --rule="wear.my-online-store.com/wear*=wear-service:80"
+```
+
+To see the logs for failed pods:
+
+```bash
+kubectl logs <pod-name> -f
+```
+
+To see the logs of the previous pod:
+
+```bash
+kubectl logs <pod-name> -f --previous
+```
+
+# Troubleshooting
+
+## Troubleshooting - Application
+
+To see the previous logs of a pod:
+
+```bash
+kubectl logs pod-name -f --previous
+```
+
+## Troubleshooting - Worker Node
+
+When a worker node stops communicating with the master, it may be due to a crash, and the status is set to Unknown.
+
+- To describe a node and check status:
+
+  ```bash
+  kubectl describe node <node-name>
+  ```
+
+- To check CPU and processes:
+
+  ```bash
+  top
+  ```
+
+- To check disks:
+
+  ```bash
+  df -h
+  ```
+
+- To check the status of the kubelet:
+
+  ```bash
+  service kubelet status
+  ```
+
+- If the kubelet is stopped, start it:
+
+  ```bash
+  service kubelet start
+  ```
+
+- To check kubelet logs:
+
+  ```bash
+  sudo journalctl -u kubelet
+  ```
+
+- To check kubelet certificates:
+
+  ```bash
+  openssl x509 -in /var/lib/kubelet/worker-1.crt -text
+  ```
+
+- Kubelet files directory:
+
+  ```bash
+  /var/lib/kubelet/config.yaml
+  ```
+
+- To check the master server and its port defined in the worker node config:
+
+  ```bash
+  /etc/kubernetes/kubelet.conf
+  ```
+
 ## Conclusion
 
 This README provides an overview of various Kubernetes commands and concepts, helping you navigate and manage your Kubernetes clusters effectively.
